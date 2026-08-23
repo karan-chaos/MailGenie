@@ -14,6 +14,7 @@ public class EmailGeneratorController {
     private final EmailGeneratorService emailGeneratorService;
     private final EmailHistoryService emailHistoryService;
     private final ApiRequestMetricService apiRequestMetricService;
+    private final TelemetryService telemetryService;
 
     @PostMapping("/generate")
     public ResponseEntity<String> generateEmail(@RequestBody EmailRequest emailRequest){
@@ -47,6 +48,12 @@ public class EmailGeneratorController {
                     .characterCount(charCount)
                     .build();
             apiRequestMetricService.saveMetric(metric);
+            
+            // Log to Enterprise Telemetry system as well
+            telemetryService.logTelemetry(resolvedProvider, "/email/generate", duration, status, 
+                    exceptionToThrow != null ? exceptionToThrow.getStatusCode().toString() : null, 
+                    emailRequest.getEmailContent() != null ? emailRequest.getEmailContent().length() : 0);
+
         } catch (Exception e) {
             System.err.println("Failed to log API request metrics: " + e.getMessage());
         }

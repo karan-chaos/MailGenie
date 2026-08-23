@@ -8,6 +8,8 @@ import HelpPage from './pages/HelpPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import SecurityPage from './pages/SecurityPage';
+import EnterpriseTelemetryDashboard from './components/EnterpriseTelemetryDashboard';
+import ContextAwareTemplateList from './components/ContextAwareTemplateList';
 
 import {
   Box,
@@ -83,7 +85,7 @@ function App() {
     persuasive: ''
   });
   const [compareLoading, setCompareLoading] = useState(false);
-  
+
   // Prompt Studio Preset States
   const [studioFormality, setStudioFormality] = useState(70);
   const [studioLength, setStudioLength] = useState('medium');
@@ -260,7 +262,7 @@ function App() {
 
     try {
       const tonesToFetch = ['professional', 'casual', 'persuasive'];
-      const requests = tonesToFetch.map(t => 
+      const requests = tonesToFetch.map(t =>
         axios.post(`${backendUrl}/api/email/generate`, {
           emailContent,
           tone: t,
@@ -455,7 +457,9 @@ function App() {
     { id: 'studio', label: '🎨 Prompt Studio', icon: '✨' },
     { id: 'history', label: '📜 History Logs', icon: '⏳' },
     { id: 'templates', label: '📂 Saved Templates', icon: '📁' },
+    { id: 'context_templates', label: '🧠 Context Templates', icon: '🧠' },
     { id: 'analytics', label: '📊 Usage Analytics', icon: '📈' },
+    { id: 'telemetry', label: '🚀 Enterprise Telemetry', icon: '🚀' },
     { id: 'settings', label: '⚙️ Settings', icon: '⚙️' }
   ];
 
@@ -564,12 +568,12 @@ function App() {
                       Generate tailored drafts using advanced artificial intelligence models.
                     </Typography>
                   </Box>
-                  
+
                   <FormControlLabel
                     control={
-                      <Switch 
-                        checked={compareMode} 
-                        onChange={(e) => setCompareMode(e.target.checked)} 
+                      <Switch
+                        checked={compareMode}
+                        onChange={(e) => setCompareMode(e.target.checked)}
                         color="secondary"
                       />
                     }
@@ -583,7 +587,7 @@ function App() {
                     <Paper className="glass-card" sx={{ p: 4 }}>
                       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                         <Box>
-                          <TextField 
+                          <TextField
                             fullWidth
                             multiline
                             rows={6}
@@ -753,7 +757,7 @@ function App() {
                           ✨ Generated Reply Draft
                         </Typography>
                         <Divider sx={{ my: 2 }} />
-                        
+
                         {generatedReply ? (
                           <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
                             <TextField
@@ -763,7 +767,7 @@ function App() {
                               variant='outlined'
                               value={generatedReply}
                               inputProps={{ readOnly: true }}
-                              sx={{ 
+                              sx={{
                                 backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.25)' : '#f8fafc',
                                 borderRadius: 3,
                                 flexGrow: 1
@@ -1379,6 +1383,14 @@ Custom Directives: ${studioCustomInstruction || 'None'}
               </Box>
             )}
 
+            {activeTab === 'telemetry' && (
+              <EnterpriseTelemetryDashboard />
+            )}
+
+            {activeTab === 'context_templates' && (
+              <ContextAwareTemplateList />
+            )}
+
             {activeTab === 'about' && (
               <AboutPage onBack={() => setActiveTab('generator')} />
             )}
@@ -1435,9 +1447,9 @@ Custom Directives: ${studioCustomInstruction || 'None'}
         onClose={() => setToast(prev => ({ ...prev, open: false }))}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
-        <Alert 
-          onClose={() => setToast(prev => ({ ...prev, open: false }))} 
-          severity={toast.severity} 
+        <Alert
+          onClose={() => setToast(prev => ({ ...prev, open: false }))}
+          severity={toast.severity}
           variant="filled"
           sx={{ width: '100%', borderRadius: 3, fontWeight: 600 }}
         >
